@@ -37,6 +37,7 @@ public class MapFragment extends Fragment implements LocationManager.LocationUpd
     private User mUser;
     private boolean isZoomed = false;
     private Handler handler;
+    private Handler debugHandler;
 
     //Interface for passing information up the chain to the Hub Activity
     public Communicator mCommunicator;
@@ -75,7 +76,14 @@ public class MapFragment extends Fragment implements LocationManager.LocationUpd
         //Debugger if required
         if(Constants.debugging) {
             mDebugger = new Debugger(db);
-            DBDebugging.addFakeUsers(db);
+            debugHandler = new Handler();
+            final int delay = 2000; //milliseconds
+
+            debugHandler.postDelayed(new Runnable() {
+                public void run() {
+                    mDebugger.update(delay);
+                    handler.postDelayed(this, delay);
+                }}, delay);
         }
 
         return rootView;
@@ -101,7 +109,7 @@ public class MapFragment extends Fragment implements LocationManager.LocationUpd
     @Override
     public void onLocationMoved(GeoPoint location) {
         //Updates the fake users with positions around the user
-        if(Constants.debugging) { DBDebugging.populateArea(db, location.getLongitude(), location.getLatitude(), mDebugger.addData); }
+        if(Constants.debugging) { mDebugger.updateLocation(location); }
         //Adds markers to the map for the user to observe
         DBInput.addMarkers(db, getActivity(), googleMap, location.getLatitude(), location.getLongitude());
     }
@@ -116,7 +124,6 @@ public class MapFragment extends Fragment implements LocationManager.LocationUpd
             handler.postDelayed(new Runnable() {
                 public void run() {
                         mUser.update(db);
-                        mDebugger.update(delay);
                         handler.postDelayed(this, delay);
 
                         if(!mUser.isMatched()) {

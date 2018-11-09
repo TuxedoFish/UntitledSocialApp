@@ -74,6 +74,8 @@ public class DBInput {
                         BitmapDescriptor img = utils.bitmapDescriptorFromVector(context, R.drawable.ic_coffee_image_white);
                         //query worked
                         //there was people in the vicinity of you
+                        googleMap.clear();
+
                         for(int i=0; i<results.size(); i++) {
                             if(results.get(i).getId().contains("user")) {
                                 DocumentSnapshot snapshot = results.get(i);
