@@ -16,7 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import co.nf.tuxedofish.socialapp.frontend.HubActivity;
-import co.nf.tuxedofish.socialapp.frontend.hubfragments.mapping.LocationManager;
+import co.nf.tuxedofish.socialapp.frontend.hubfragments.mapping.LocationHandler;
 import co.nf.tuxedofish.socialapp.frontend.hubfragments.mapping.MapUIHandler;
 import co.nf.tuxedofish.socialapp.frontend.hubfragments.matching.Debugger;
 import co.nf.tuxedofish.socialapp.utils.Constants;
@@ -26,11 +26,11 @@ import co.nf.tuxedofish.socialapp.R;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBDebugging;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBInput;
 
-public class MapFragment extends Fragment implements LocationManager.LocationUpdater {
+public class MapFragment extends Fragment implements LocationHandler.LocationUpdater {
     private MapView mMapView;
     private GoogleMap googleMap;
 
-    private LocationManager mLocationManager;
+    private LocationHandler mLocationManager;
     private Debugger mDebugger;
     private FirebaseFirestore db;
 
@@ -68,14 +68,14 @@ public class MapFragment extends Fragment implements LocationManager.LocationUpd
         try { MapsInitializer.initialize(getActivity().getApplicationContext());} catch (Exception e) { e.printStackTrace() ; }
 
         //Set up the classes that handle all the interactions with the map
-        mLocationManager = new LocationManager(db);
+        mLocationManager = new LocationHandler(db, getActivity());
 
         //Initialises database
         db = FirebaseFirestore.getInstance();
 
         //Debugger if required
         if(Constants.debugging) {
-            mDebugger = new Debugger(db);
+            mDebugger = new Debugger(db, getActivity());
             debugHandler = new Handler();
             final int delay = 2000; //milliseconds
 

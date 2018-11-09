@@ -1,8 +1,15 @@
 package co.nf.tuxedofish.socialapp.frontend.hubfragments.matching;
 
+import android.Manifest;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -11,6 +18,7 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 
+import co.nf.tuxedofish.socialapp.utils.PermissionHandler;
 import co.nf.tuxedofish.socialapp.utils.User;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBDebugging;
 
@@ -45,7 +53,7 @@ public class Debugger {
                             (String) result.get("full_name"), (String) result.get("department"),
                             (String) result.get("is_student"), result.getGeoPoint("location"));
                 } else {
-                    Log.d("error", "no such user found @ Line 30 of LocationManager");
+                    Log.d("error", "no such user found @ Line 30 of LocationHandler");
                 }
 
                 boolean shouldAdd = true;

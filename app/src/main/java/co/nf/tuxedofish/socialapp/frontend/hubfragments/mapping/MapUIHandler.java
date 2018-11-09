@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
 
+import co.nf.tuxedofish.socialapp.utils.PermissionHandler;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBDebugging;
 
 public class MapUIHandler {
@@ -54,10 +55,7 @@ public class MapUIHandler {
     public static boolean signIn(Context context, GoogleMap googleMap) {
         android.location.LocationManager locationManager = (android.location.LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager != null) {
-            if (ContextCompat.checkSelfPermission(context,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-
+            if (PermissionHandler.checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Location lastKnownLocationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                 if(lastKnownLocationGPS!=null) {
