@@ -76,6 +76,8 @@ public class DBInput {
                         //there was people in the vicinity of you
                         googleMap.clear();
 
+                        Log.d("DEBUG", "Number of users found in the vicinity : " + results.size());
+
                         for(int i=0; i<results.size(); i++) {
                             if(results.get(i).getId().contains("user")) {
                                 DocumentSnapshot snapshot = results.get(i);

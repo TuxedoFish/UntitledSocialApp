@@ -82,7 +82,7 @@ public class MapFragment extends Fragment implements LocationManager.LocationUpd
             debugHandler.postDelayed(new Runnable() {
                 public void run() {
                     mDebugger.update(delay);
-                    handler.postDelayed(this, delay);
+                    debugHandler.postDelayed(this, delay);
                 }}, delay);
         }
 

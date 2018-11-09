@@ -3,7 +3,8 @@ package co.nf.tuxedofish.socialapp.utils;
 public final class Constants {
     //DEBUG CONSTANTS PLEASE REMOVE
     public static final boolean debugging = true;
-    public static final int NUMBER_FAKE_USERS = 4;
+    public static final int MAX_NUMBER_FAKE_USERS = 4;
+    public static int USERS_ADDED = 0;
     //IN MILES
     //IN FINAL VERSION SHOULD BE EDITABLE
     public static final double QUERY_RADIUS = 0.5;
