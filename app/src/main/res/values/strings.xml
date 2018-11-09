@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">FamShip</string>
+    <string name="fs">FS</string>
+    <string name="register">Register</string>
+    <string name="sign_in">Log In</string>
+    <string name="or_text">OR</string>
+
+    <string name="hint_email">E-mail</string>
+    <string name="hint_password">Password</string>
+
+    <string name="loading_timer">Loading countdown&#8230;</string>
+
+    <string name="icon_text">Click icon to register for the next event!</string>
+
+    <string name="welcome_dialog_text">Welcome to FamShip! Please select the university you are currently attending</string>
+    <string name="hint_name">Name</string>
+
+    <string name="hint_chat">Enter text here</string>
+
+    <string name="hint_text_box">Click to find a group for later !</string>
+
+    <string name="go">Go!</string>
+
+    <string name="loading">Loading&#8230;</string>
+
+    <string name="bail"><u> Bail </u></string>
+    <string name="message_icon_desc">message icon</string>
+
+    <string name="hint_instruction">Turn left at Gower St</string>
+
+    <string name="consent_email">Click to confirm that you consent to us storing data provided by UCL for the purposes of a public profile.
+        Your information will not be passed on to any third parties.</string>
+    <string name="consent_email_box">I consent to the data policy</string>
+    <string name="next">Next</string>
+
+    <string name="welcome_password">Hi !</string>
+    <string name="instructions_password">Pick a password for your account: </string>
+
+    <string name="questions_count_empty">Loading questions&#8230;</string>
+    <string name="empty_answer">Answer loading&#8230;</string>
+    <string name="example_question">Are you a fan of Thor Ragnorak?</string>
+    <string name="question_count">0/5</string>
+    <string name="questions_last">Finish</string>
+
+    <string name="profile_descriptor">profile picture here</string>
+
+    <string name="facebook_app_id">2110739609179572</string>
+    <string name="fb_login_protocol_scheme">fb2110739609179572</string>
+
+    <string name="hint_choose_password">Choose a strong password</string>
+    <string name="hint_confirm_password">Confirm password</string>
+
+    <string name="sent_verification">We have sent you an email verification, check your emails and follow the link to confirm your email address</string>
+    <string name="open_mail">OPEN MAIL</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="group_reveal_answers">Reveal Answers</string>
+    <string name="group_welcome">Your Group!</string>
+    <string name="empty_user_name">loading&#8230;</string>
+</resources>
