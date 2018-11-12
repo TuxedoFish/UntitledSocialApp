@@ -46,13 +46,13 @@ public class DBOutput {
         DocumentReference docref = db.collection("USERS").document(mUserUID);
         GeoPoint user_loc = new GeoPoint(latitude, longitude);
 
-        DBInput.getUser(db, mUserUID, onCompleteListener);
-
         Map<String, Object> locationData = new HashMap<>();
         locationData.put("location", user_loc);
 
         Log.d("help", "tried to add data : " + mUserUID);
 
         docref.update(locationData);
+
+        DBInput.getUser(db, mUserUID, onCompleteListener);
     }
 }

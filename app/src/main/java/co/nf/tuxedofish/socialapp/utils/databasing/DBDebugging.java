@@ -47,12 +47,15 @@ public class DBDebugging {
     /*
     Adds a whole series of fake data to the USERS collection
      */
-    public static void addFakeUser(FirebaseFirestore db, GeoPoint loc) {
+    public static void addFakeUser(FirebaseFirestore db, GeoPoint loc, OnCompleteListener<DocumentSnapshot> callback) {
         if(Constants.USERS_ADDED<Constants.MAX_NUMBER_FAKE_USERS) {
             Log.d("DEBUG", "New fake user added id : user_" + Constants.USERS_ADDED);
-            db.collection("USERS").document("user_" + Constants.USERS_ADDED)
-                    .set(getFakeUser("user_" + Constants.USERS_ADDED, loc));
+            DocumentReference docref = db.collection("USERS").document("user_" + Constants.USERS_ADDED);
+
+            docref.set(getFakeUser("user_" + Constants.USERS_ADDED, loc));
             Constants.USERS_ADDED++;
+
+            DBInput.getUser(db, "user_"+Constants.USERS_ADDED, callback);
         }
     }
 

@@ -65,8 +65,8 @@ public class User {
         return matches;
     }
 
-    public void beginSearching(FirebaseFirestore db) {setmStatus(db, Constants.STATUS_SEARCHING);}
-    public void setmStatus(FirebaseFirestore db, int new_status) {mStatus = DBOutput.setStatus(db, new_status, mLocation, mID);}
+    public void beginSearching(FirebaseFirestore db) { setmStatus(db, Constants.STATUS_SEARCHING); }
+    public void setmStatus(FirebaseFirestore db, int new_status) { mStatus = DBOutput.setStatus(db, new_status, mLocation, mID); }
     public int getmStatus() {
         return mStatus;
     }
