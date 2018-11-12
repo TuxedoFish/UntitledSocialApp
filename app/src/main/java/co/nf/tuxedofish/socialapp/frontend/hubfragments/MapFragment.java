@@ -3,8 +3,11 @@ package co.nf.tuxedofish.socialapp.frontend.hubfragments;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +23,6 @@ import co.nf.tuxedofish.socialapp.frontend.hubfragments.mapping.LocationHandler;
 import co.nf.tuxedofish.socialapp.frontend.hubfragments.mapping.MapUIHandler;
 import co.nf.tuxedofish.socialapp.frontend.hubfragments.matching.Debugger;
 import co.nf.tuxedofish.socialapp.utils.Constants;
-import co.nf.tuxedofish.socialapp.utils.PermissionHandler;
 import co.nf.tuxedofish.socialapp.utils.User;
 import co.nf.tuxedofish.socialapp.R;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBDebugging;
@@ -50,9 +52,11 @@ public class MapFragment extends Fragment implements LocationHandler.LocationUpd
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        //Sets up everything map related
-        PermissionHandler.getPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION,
-                Constants.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
+            ActivityCompat.requestPermissions(getActivity(), permissions, Constants.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+
         mMapView = rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
@@ -67,15 +71,15 @@ public class MapFragment extends Fragment implements LocationHandler.LocationUpd
         //Unnecessary provided that the google map returned is non null
         try { MapsInitializer.initialize(getActivity().getApplicationContext());} catch (Exception e) { e.printStackTrace() ; }
 
-        //Set up the classes that handle all the interactions with the map
-        mLocationManager = new LocationHandler(db, getActivity());
-
         //Initialises database
         db = FirebaseFirestore.getInstance();
 
+        //Set up the classes that handle all the interactions with the map
+        mLocationManager = new LocationHandler(db, getActivity(), this);
+
         //Debugger if required
         if(Constants.debugging) {
-            mDebugger = new Debugger(db, getActivity());
+            mDebugger = new Debugger(db);
             debugHandler = new Handler();
             final int delay = 2000; //milliseconds
 
@@ -123,16 +127,10 @@ public class MapFragment extends Fragment implements LocationHandler.LocationUpd
 
             handler.postDelayed(new Runnable() {
                 public void run() {
-                        mUser.update(db);
-                        handler.postDelayed(this, delay);
+                mUser.update(db);
+                handler.postDelayed(this, delay);
 
-                        if(!mUser.isMatched()) {
-                            mUser.update(db);
-                        } else {
-                            //start up decision activity FOR RESULT
-                            handler.removeCallbacksAndMessages(null);
-                            mCommunicator.sendRequest();
-                        }
+                mUser.update(db);
                 }
             }, delay);
         }

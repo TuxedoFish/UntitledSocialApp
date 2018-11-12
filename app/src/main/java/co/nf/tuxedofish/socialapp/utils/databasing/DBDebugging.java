@@ -48,16 +48,18 @@ public class DBDebugging {
     Adds a whole series of fake data to the USERS collection
      */
     public static void addFakeUser(FirebaseFirestore db, GeoPoint loc) {
-        Log.d("DEBUG", "New fake user added id : user_" + Constants.USERS_ADDED);
-        db.collection("USERS").document("user_" + Constants.USERS_ADDED)
-                .set(getFakeUser(db, "user_"+Constants.USERS_ADDED, loc, Constants.USERS_ADDED));
-        Constants.USERS_ADDED ++;
+        if(Constants.USERS_ADDED<Constants.MAX_NUMBER_FAKE_USERS) {
+            Log.d("DEBUG", "New fake user added id : user_" + Constants.USERS_ADDED);
+            db.collection("USERS").document("user_" + Constants.USERS_ADDED)
+                    .set(getFakeUser("user_" + Constants.USERS_ADDED, loc));
+            Constants.USERS_ADDED++;
+        }
     }
 
     /*
     Populates the surrounding area with fake users
      */
-    public static GeoPoint getSimulatedLocation(FirebaseFirestore db, GeoPoint loc, int fakeID) {
+    public static GeoPoint getSimulatedLocation(GeoPoint loc) {
         //all in miles
         double degree_lat = 69;
         double degree_long = Math.cos(Math.toRadians(loc.getLatitude())) * 69.172;
@@ -86,10 +88,8 @@ public class DBDebugging {
     }
 
 
-    /*
-    Returns some fake user data
-     */
-    private static Map<String, Object> getFakeUser(FirebaseFirestore db, String mName, GeoPoint loc, int fakeID) {
+    //Returns some fake user data
+    private static Map<String, Object> getFakeUser(String mName, GeoPoint loc) {
         Map<String, Object> mFakeData = new HashMap<>();
 
         mFakeData.put("first_name", mName);
@@ -100,7 +100,7 @@ public class DBDebugging {
         mFakeData.put("email", "someone@ucl.ac.uk");
         mFakeData.put("status", Constants.STATUS_ONLINE);
         mFakeData.put("id", mName);
-        mFakeData.put("location", getSimulatedLocation(db, loc, fakeID));
+        mFakeData.put("location", getSimulatedLocation(loc));
 
         return mFakeData;
     }

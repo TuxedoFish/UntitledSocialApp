@@ -1,15 +1,8 @@
 package co.nf.tuxedofish.socialapp.frontend.hubfragments.matching;
 
-import android.Manifest;
-import android.content.Context;
-import android.location.Location;
-import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -18,7 +11,6 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 
-import co.nf.tuxedofish.socialapp.utils.PermissionHandler;
 import co.nf.tuxedofish.socialapp.utils.User;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBDebugging;
 
@@ -82,6 +74,8 @@ public class Debugger {
                 mUsers.get(i).update(db);
             }
         }
+
+        Log.d("information", "is location known : " + locationKnown);
 
         tsl += delay;
         if(tsl >= ttu && locationKnown) {

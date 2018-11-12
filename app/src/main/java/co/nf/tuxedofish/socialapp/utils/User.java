@@ -72,6 +72,13 @@ public class User {
     }
 
     public void update(FirebaseFirestore db) {
+        if(matched) {
+            //Function will check and update if there has been any changes in the group file
+            checkGroupDoc(db);
+            //No need to evaluate rest of the logic if we have already matched
+            return;
+        }
+
         /*
         Basically just need to check that all of the data is available to be able to warrant classifying a match
         Checklist:
@@ -151,6 +158,31 @@ public class User {
             Log.d("info", "managed to find a match for : " + mID);
             matched = true;
         }
+    }
+
+    public void checkGroupDoc(FirebaseFirestore db) {
+        DBInput.getMatches(db, mID, new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    Log.d("success", "succesfully loaded group doc to check size in User");
+                    List<DocumentSnapshot> results = task.getResult().getDocuments();
+                    int newSize = results.size();
+
+                    if(newSize != groupSize) {
+                        //Our size has changed
+
+                        //Loops and adds all the users into matches that have not previously been seen
+                        for(int i=(int)(groupSize-1); i<(newSize-1); i++) {
+                            matches.add(new User(results.get(i).getString("id"),
+                                    results.get(i).getString("first_name")));
+                        }
+                    }
+                } else {
+                    Log.e("error", "Failed to find group file : " + groupFileLoc + " in line 163 of User.java");
+                }
+            }
+        });
     }
 
     public boolean isMatched() { return matched; }
