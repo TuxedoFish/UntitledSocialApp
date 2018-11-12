@@ -37,27 +37,27 @@ public class Debugger {
         @Override
         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
             if (task.isSuccessful()) {
-                User user = null;
+                User user;
                 DocumentSnapshot result = task.getResult();
 
                 if (result.exists()) {
                     user = new User(result.getId(), (String) result.get("first_name"), (String) result.get("email"),
                             (String) result.get("full_name"), (String) result.get("department"),
                             (String) result.get("is_student"), result.getGeoPoint("location"));
-                } else {
-                    Log.d("error", "no such user found @ Line 30 of LocationHandler");
-                }
 
-                boolean shouldAdd = true;
+                    boolean shouldAdd = true;
 
-                for (int i = 0; i < mUsers.size(); i++) {
-                    if (mUsers.get(i).getMyId() == user.getMyId()) {
-                        shouldAdd = false;
+                    for (int i = 0; i < mUsers.size(); i++) {
+                        if (mUsers.get(i).getMyId() == user.getMyId()) {
+                            shouldAdd = false;
+                        }
                     }
-                }
-                if (shouldAdd) {
-                    user.beginSearching(db);
-                    mUsers.add(user);
+                    if (shouldAdd ) {
+                        user.beginSearching(db);
+                        mUsers.add(user);
+                    }
+                } else {
+                    Log.e("error", "no such user found @ Line 60 of Debugger");
                 }
             }
         }

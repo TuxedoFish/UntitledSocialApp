@@ -51,11 +51,12 @@ public class DBDebugging {
         if(Constants.USERS_ADDED<Constants.MAX_NUMBER_FAKE_USERS) {
             Log.d("DEBUG", "New fake user added id : user_" + Constants.USERS_ADDED);
             DocumentReference docref = db.collection("USERS").document("user_" + Constants.USERS_ADDED);
-
+            //Update the information in the database
             docref.set(getFakeUser("user_" + Constants.USERS_ADDED, loc));
+            //Get the user data so it can be stored in the debugger
+            DBInput.getUser(db, "user_" + Constants.USERS_ADDED, callback);
+            //Update the no. users added
             Constants.USERS_ADDED++;
-
-            DBInput.getUser(db, "user_"+Constants.USERS_ADDED, callback);
         }
     }
 
