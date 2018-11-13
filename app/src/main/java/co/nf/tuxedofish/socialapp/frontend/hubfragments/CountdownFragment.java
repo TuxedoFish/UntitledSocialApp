@@ -81,8 +81,6 @@ public class CountdownFragment extends Fragment {
                 } else {
                     Log.d("info", "failed to load the current meetup : " + task.getException());
                     //Logic here to display a :( sorry no meetup today page
-
-
                 }
             }
         });

@@ -109,6 +109,7 @@ public class User {
         //Checks that the document has been loaded into the group only once we found where
         //the group file is located
         if(statusLoaded) {
+            Log.d("information", "looking for : " + groupFileLoc);
             DBInput.getGroupDocument(db, groupFileLoc, new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {

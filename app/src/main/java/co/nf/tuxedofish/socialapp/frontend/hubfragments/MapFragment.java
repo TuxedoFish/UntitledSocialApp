@@ -106,7 +106,10 @@ public class MapFragment extends Fragment implements LocationHandler.LocationUpd
     //Gets called when the current user's data is loaded from the database
     @Override
     public void onUserLoaded(User user) {
-        mUser = user;
+        //Only update user if the user is currently null
+        if(mUser == null) {
+            mUser = user;
+        }
     }
 
     //Gets called every time that a movement in the location of the user is observed
