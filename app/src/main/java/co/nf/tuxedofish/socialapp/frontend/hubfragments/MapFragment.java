@@ -134,6 +134,9 @@ public class MapFragment extends Fragment implements LocationHandler.LocationUpd
                 handler.postDelayed(this, delay);
 
                 mUser.update(db);
+                if(mUser.isMatched()) {
+                    mCommunicator.sendRequest();
+                }
                 }
             }, delay);
         }
