@@ -81,7 +81,7 @@ public class Debugger {
         if(tsl >= ttu && locationKnown) {
             DBDebugging.addFakeUser(db, lastKnownLocation, addData);
 
-            ttu = (int)(Math.random()*6000);
+            ttu = (int)(Math.random()*8000);
             tsl = 0;
         }
     }

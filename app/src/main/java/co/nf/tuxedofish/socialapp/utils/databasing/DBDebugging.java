@@ -28,6 +28,8 @@ import co.nf.tuxedofish.socialapp.utils.User;
 import co.nf.tuxedofish.socialapp.utils.Utilities;
 
 public class DBDebugging {
+    private static String[] fakeNames = {"John", "Harry", "Phil", "Tom", "Olly", "Joe", "Timmy"};
+
     /*
     Deletes all the fake users upon debug device closing the app
      */
@@ -96,7 +98,9 @@ public class DBDebugging {
     private static Map<String, Object> getFakeUser(String mName, GeoPoint loc) {
         Map<String, Object> mFakeData = new HashMap<>();
 
-        mFakeData.put("first_name", mName);
+        int name = (int)(Math.random()*6);
+
+        mFakeData.put("first_name", fakeNames[name]);
         mFakeData.put("age", -1);
         mFakeData.put("gender", "UNKNOWN");
         mFakeData.put("bio", "please enter a bio");

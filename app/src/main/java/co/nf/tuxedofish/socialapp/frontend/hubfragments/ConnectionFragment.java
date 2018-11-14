@@ -1,24 +1,36 @@
 package co.nf.tuxedofish.socialapp.frontend.hubfragments;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import co.nf.tuxedofish.socialapp.R;
 import co.nf.tuxedofish.socialapp.utils.User;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ConnectionFragment extends Fragment {
-    private static final String ARG_MATCH_NAMES = "user_match_names_key";
-    private String[] matchNames;
+    private static final String ARG_MY_USER = "YEKDIRESU-20181114";
+
+    private User mUser;
+    private int matchesLoaded = 0;
+
+    private View topView;
+
+    private FirebaseFirestore db;
 
     private OnFragmentInteractionListener mListener;
 
@@ -26,29 +38,24 @@ public class ConnectionFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param matches user matches.
-     * @return A new instance of fragment ConnectionFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ConnectionFragment newInstance(ArrayList<User> matches) {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        //No call for super(). Bug on API Level > 11.
+    }
+
+    //Stores the user of the apps current data
+    public static ConnectionFragment newInstance(User mUser) {
         ConnectionFragment fragment = new ConnectionFragment();
         Bundle args = new Bundle();
-        //Fill a string array with the names
-        ArrayList<String> matchNames = new ArrayList<>();
-        for(int i=0; i<matches.size(); i++) { matchNames.add(matches.get(i).getFirstName()); }
 
-        args.putStringArray(ARG_MATCH_NAMES, matchNames.toArray(new String[0]));
+        args.putSerializable(ARG_MY_USER, mUser);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        this.matchNames = getArguments().getStringArray(ARG_MATCH_NAMES);
+        this.mUser = (User) getArguments().getSerializable(ARG_MY_USER);
         super.onCreate(savedInstanceState);
     }
 
@@ -75,6 +82,23 @@ public class ConnectionFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        //Update the UI upon any change in group
+        final Context mContext = context;
+        final Handler handler;
+        handler = new Handler();
+        final int delay = 2000; //milliseconds
+
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                handler.postDelayed(this, delay);
+
+                mUser.update(db);
+                if(mUser.getMatches().size() > matchesLoaded) {
+                    updateUI(topView, mContext);
+                }
+            }
+        }, delay);
     }
 
     @Override
@@ -102,15 +126,11 @@ public class ConnectionFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Log.d("info", "The name of one of the matches is : " + matchNames[0]);
+        db = FirebaseFirestore.getInstance();
+        this.topView = view;
 
-        TextView userName0 = view.findViewById(R.id.userName0);
-        TextView userName1 = view.findViewById(R.id.userName1);
-        TextView userName2 = view.findViewById(R.id.userName2);
-        TextView userName3 = view.findViewById(R.id.userName3);
-
-        userName0.setText(matchNames[0]); userName1.setText(matchNames[1]);
-        userName2.setText(matchNames[2]); userName3.setText(matchNames[3]);
+        //update the UI for the first time
+        updateUI(view, getContext());
 
 //        BlurLayout sampleLayout = (BlurLayout)(getActivity().findViewById(R.id.user_1_blur));
 //        View hover = LayoutInflater.from(getContext()).inflate(R.layout.hover_profile, null);
@@ -121,5 +141,43 @@ public class ConnectionFragment extends Fragment {
 //        }
 //
 //        sampleLayout.setHoverView(hover);
+    }
+
+    public void updateUI(View view, Context context) {
+        //First clear all the children
+        LinearLayout images = view.findViewById(R.id.imagesLayout);
+        images.removeAllViews();
+
+        LinearLayout names = view.findViewById(R.id.namesLayout);
+        names.removeAllViews();
+
+        //Now we want to add in all of the matches that we have
+        ArrayList<User> matches = mUser.getMatches();
+
+        final float scale = context.getResources().getDisplayMetrics().density;
+
+        for(int i=0; i<matches.size(); i++) {
+            //Define the picture to be added
+            CircleImageView picture = new CircleImageView(context);
+            picture.setBorderColor(context.getResources().getColor(R.color.colorSecondary));
+            picture.setBorderWidth(5);
+            LinearLayout.LayoutParams layoutParamsPic = new LinearLayout.LayoutParams((int)(82*scale), (int)(75*scale));
+            picture.setBackgroundResource(R.drawable.ic_profile_icon);
+            picture.setLayoutParams(layoutParamsPic);
+
+            //Define the name to be added
+            TextView name = new TextView(context);
+            LinearLayout.LayoutParams layoutParamsName = new LinearLayout.LayoutParams((int)(82*scale), ViewGroup.LayoutParams.WRAP_CONTENT);
+            name.setLayoutParams(layoutParamsName);
+            name.setText(matches.get(i).getFirstName());
+            name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            name.setTextColor(context.getResources().getColor(R.color.colorSecondary));
+            name.setTextSize(18);
+
+            //Add the picture
+            images.addView(picture);
+            //Add the name
+            names.addView(name);
+        }
     }
 }

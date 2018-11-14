@@ -13,6 +13,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import co.nf.tuxedofish.socialapp.utils.databasing.DBInput;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBNaming;
 import co.nf.tuxedofish.socialapp.utils.databasing.DBOutput;
 
-public class User {
+public class User implements Serializable {
     //ESSENTIAL USER INFO
     private String mFirstName, mEmail, mFullName, mDepartment, mID;
     private boolean isStudent;
@@ -90,25 +91,27 @@ public class User {
          */
 
         //Checks that the status has loaded and if it has then counts as status loaded
-        DBInput.getUser(db, mID, new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.getResult()!=null && task.getResult().getDouble("status")!=null) {
-                    if(task.getResult().getDouble("status")==Constants.STATUS_MATCHED) {
-                        groupFileLoc = task.getResult().getString("group_file_loc");
-                        mStatus = (int)Math.round(task.getResult().getDouble("status"));
-                        statusLoaded = true;
+        if(!statusLoaded) {
+            DBInput.getUser(db, mID, new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.getResult() != null && task.getResult().getDouble("status") != null) {
+                        if (task.getResult().getDouble("status") == Constants.STATUS_MATCHED) {
+                            groupFileLoc = task.getResult().getString("group_file_loc");
+                            mStatus = (int) Math.round(task.getResult().getDouble("status"));
+                            statusLoaded = true;
+                        }
+                    } else {
+                        Log.e("error ", "error loading user : Could not find user, " + mID);
+                        Log.e("error ", "location: line 84 of utils/User.java");
                     }
-                } else {
-                    Log.e("error ","error loading user : Could not find user, " + mID);
-                    Log.e("error ","location: line 84 of utils/User.java");
                 }
-            }
-        });
+            });
+        }
 
         //Checks that the document has been loaded into the group only once we found where
         //the group file is located
-        if(statusLoaded) {
+        if(statusLoaded && !groupDocLoaded) {
             Log.d("information", "looking for : " + groupFileLoc);
             DBInput.getGroupDocument(db, groupFileLoc, new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -130,22 +133,18 @@ public class User {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.getResult() != null) {
-                        //Checks that the whole group has been loaded in
-                        if (task.getResult().getDocuments().size() == groupSize-1) {
-                            //Only load data if no users yet
-                            if(matches.size()==0) {
-                                List<DocumentSnapshot> results = task.getResult().getDocuments();
-                                //Load the data into my matches
-                                for (int i = 0; i < results.size(); i++) {
-                                    //Create new user
-                                    matches.add(new User(results.get(i).getString("id"),
-                                            results.get(i).getString("first_name")));
-
-                                }
+                        //Only load data if no users yet
+                        if(matches.size()==0) {
+                            List<DocumentSnapshot> results = task.getResult().getDocuments();
+                            //Load the data into my matches
+                            for (int i = 0; i < groupSize-1; i++) {
+                                //Create new user
+                                matches.add(new User(results.get(i).getString("id"),
+                                        results.get(i).getString("first_name")));
                             }
-                            //Update the fact the matches have loaded
-                            matchesLoaded = true;
                         }
+                        //Update the fact the matches have loaded
+                        matchesLoaded = true;
                     } else {
                         Log.d("info ", "no matches found for : " + mID);
                     }

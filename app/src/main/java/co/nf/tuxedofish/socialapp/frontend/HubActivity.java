@@ -91,10 +91,11 @@ public class HubActivity extends AppCompatActivity implements MapFragment.Commun
     }
 
     public void loadMatchScreen() {
-        ArrayList<User> matches = mMapFragment.getMyUser().getMatches();
-        Log.d("info", "found a match with : " + matches.size() + "people");
+        User mainUser = mMapFragment.getMyUser();
+        Log.d("info", "found a match with : " + mainUser.getMatches().size() + " people");
 
-        mConnectionFragment = ConnectionFragment.newInstance(matches);
+        mConnectionFragment = ConnectionFragment.newInstance(mainUser);
+
         Utilities.closeFragment(R.id.overlayPanel, getFragmentManager());
         Utilities.openFragment(mConnectionFragment, R.id.overlayPanel, getFragmentManager());
     }
@@ -106,24 +107,24 @@ public class HubActivity extends AppCompatActivity implements MapFragment.Commun
         authLogic.signIn(email, password, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d("notify", "log in : success");
+            if (task.isSuccessful()) {
+                Log.d("notify", "log in : success");
 
-                    mMapFragment.enableLocation(authLogic.getCurrentUserId());
-                    mMapFragment.signIn();
+                mMapFragment.enableLocation(authLogic.getCurrentUserId());
+                mMapFragment.signIn();
 
-                    Utilities.closeFragment(R.id.overlayPanel, getFragmentManager());
-                    mSearchOverlayFragment = new SearchOverlayFragment();
-                    Utilities.openFragment(mSearchOverlayFragment, R.id.overlayPanel, getFragmentManager());
+                Utilities.closeFragment(R.id.overlayPanel, getFragmentManager());
+                mSearchOverlayFragment = new SearchOverlayFragment();
+                Utilities.openFragment(mSearchOverlayFragment, R.id.overlayPanel, getFragmentManager());
 
-                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    DBInput.refreshUser(db, authLogic);
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("error", "log in : failure", task.getException());
-                    Toast.makeText(HubActivity.this, "Log in failed",
-                            Toast.LENGTH_SHORT).show();
-                }
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                DBInput.refreshUser(db, authLogic);
+            } else {
+                // If sign in fails, display a message to the user.
+                Log.w("error", "log in : failure", task.getException());
+                Toast.makeText(HubActivity.this, "Log in failed",
+                        Toast.LENGTH_SHORT).show();
+            }
             }
         });
     }
