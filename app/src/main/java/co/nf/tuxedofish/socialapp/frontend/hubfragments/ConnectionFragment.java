@@ -28,9 +28,13 @@ public class ConnectionFragment extends Fragment {
     private User mUser;
     private int matchesLoaded = 0;
 
-    private View topView;
+    private LinearLayout images, names;
+    private float scale;
+    private int secondaryColor;
 
     private FirebaseFirestore db;
+
+    private Context mContext;
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,23 +86,6 @@ public class ConnectionFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-
-        //Update the UI upon any change in group
-        final Context mContext = context;
-        final Handler handler;
-        handler = new Handler();
-        final int delay = 2000; //milliseconds
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                handler.postDelayed(this, delay);
-
-                mUser.update(db);
-                if(mUser.getMatches().size() > matchesLoaded) {
-                    updateUI(topView, mContext);
-                }
-            }
-        }, delay);
     }
 
     @Override
@@ -127,10 +114,33 @@ public class ConnectionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         db = FirebaseFirestore.getInstance();
-        this.topView = view;
+
+        images = view.findViewById(R.id.imagesLayout);
+        names = view.findViewById(R.id.namesLayout);
+
+        scale = getContext().getResources().getDisplayMetrics().density;
+        secondaryColor = getContext().getResources().getColor(R.color.colorSecondary);
+
+        mContext = getActivity();
 
         //update the UI for the first time
-        updateUI(view, getContext());
+        updateUI();
+
+        //Update the UI upon any change in group
+        final Handler handler;
+        handler = new Handler();
+        final int delay = 2000; //milliseconds
+
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                handler.postDelayed(this, delay);
+
+                mUser.update(db);
+                if(mUser.getMatches().size() > matchesLoaded) {
+                    updateUI();
+                }
+            }
+        }, delay);
 
 //        BlurLayout sampleLayout = (BlurLayout)(getActivity().findViewById(R.id.user_1_blur));
 //        View hover = LayoutInflater.from(getContext()).inflate(R.layout.hover_profile, null);
@@ -143,35 +153,30 @@ public class ConnectionFragment extends Fragment {
 //        sampleLayout.setHoverView(hover);
     }
 
-    public void updateUI(View view, Context context) {
+    public void updateUI() {
         //First clear all the children
-        LinearLayout images = view.findViewById(R.id.imagesLayout);
         images.removeAllViews();
-
-        LinearLayout names = view.findViewById(R.id.namesLayout);
         names.removeAllViews();
 
         //Now we want to add in all of the matches that we have
         ArrayList<User> matches = mUser.getMatches();
 
-        final float scale = context.getResources().getDisplayMetrics().density;
-
         for(int i=0; i<matches.size(); i++) {
             //Define the picture to be added
-            CircleImageView picture = new CircleImageView(context);
-            picture.setBorderColor(context.getResources().getColor(R.color.colorSecondary));
+            CircleImageView picture = new CircleImageView(mContext);
+            picture.setBorderColor(secondaryColor);
             picture.setBorderWidth(5);
             LinearLayout.LayoutParams layoutParamsPic = new LinearLayout.LayoutParams((int)(82*scale), (int)(75*scale));
             picture.setBackgroundResource(R.drawable.ic_profile_icon);
             picture.setLayoutParams(layoutParamsPic);
 
             //Define the name to be added
-            TextView name = new TextView(context);
+            TextView name = new TextView(mContext);
             LinearLayout.LayoutParams layoutParamsName = new LinearLayout.LayoutParams((int)(82*scale), ViewGroup.LayoutParams.WRAP_CONTENT);
             name.setLayoutParams(layoutParamsName);
             name.setText(matches.get(i).getFirstName());
             name.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-            name.setTextColor(context.getResources().getColor(R.color.colorSecondary));
+            name.setTextColor(secondaryColor);
             name.setTextSize(18);
 
             //Add the picture

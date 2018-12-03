@@ -160,26 +160,35 @@ public class User implements Serializable {
         }
     }
 
-    public void checkGroupDoc(FirebaseFirestore db) {
-        DBInput.getMatches(db, mID, new OnCompleteListener<QuerySnapshot>() {
+    public void checkGroupDoc(final FirebaseFirestore db) {
+
+        DBInput.getGroupDocument(db, groupFileLoc, new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()) {
-                    Log.d("success", "succesfully loaded group doc to check size in User");
-                    List<DocumentSnapshot> results = task.getResult().getDocuments();
-                    int newSize = results.size();
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.getResult()!=null) {
+                    final Long newSize = task.getResult().getLong("group_size");
 
-                    if(newSize != groupSize) {
-                        //Our size has changed
-
-                        //Loops and adds all the users into matches that have not previously been seen
-                        for(int i=(int)(groupSize-1); i<(newSize-1); i++) {
-                            matches.add(new User(results.get(i).getString("id"),
-                                    results.get(i).getString("first_name")));
-                        }
+                    if(newSize!=groupSize) {
+                        //If there is a change in size we need to update the UI to reflect this i.e:
+                        DBInput.getMatches(db, mID, new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d("success", "succesfully loaded group doc to check size in User");
+                                    List<DocumentSnapshot> results = task.getResult().getDocuments();
+                                    //Loops and adds all the users into matches that have not previously been seen
+                                    for (int i = (int) (groupSize - 1); i < (newSize - 1); i++) {
+                                        matches.add(new User(results.get(i).getString("id"),
+                                                results.get(i).getString("first_name")));
+                                    }
+                                } else {
+                                    Log.e("error", "Failed to find group file : " + groupFileLoc + " in line 163 of User.java");
+                                }
+                            }
+                        });
                     }
                 } else {
-                    Log.e("error", "Failed to find group file : " + groupFileLoc + " in line 163 of User.java");
+                    Log.d("info", "No group located found for : " + mID + " at : " + groupFileLoc);
                 }
             }
         });

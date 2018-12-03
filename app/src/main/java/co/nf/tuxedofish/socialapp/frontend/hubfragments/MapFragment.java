@@ -109,6 +109,7 @@ public class MapFragment extends Fragment implements LocationHandler.LocationUpd
         //Only update user if the user is currently null
         if(mUser == null) {
             mUser = user;
+            mUser.setmStatus(db, Constants.STATUS_ONLINE);
         }
     }
 

@@ -164,8 +164,11 @@ public class HubActivity extends AppCompatActivity implements MapFragment.Commun
         Utilities.openFragment(mPasswordFragment, R.id.overlayPanel, getFragmentManager());
     }
 
+    /*  Event triggered when the countdown finishes
+        Opens up an intent to google maps   */
     @Override
     public void onCountdownFinished(double longitude, double latitude) {
+        //Should only travel if has joined a group
         if(foundGroup) {
             //Change to travelling
             Utilities.closeFragment(R.id.overlayPanel, getFragmentManager());
@@ -173,6 +176,7 @@ public class HubActivity extends AppCompatActivity implements MapFragment.Commun
             String query = "google.navigation:q="+latitude + "," +longitude+"&mode=w";
             Log.d("info", query);
 
+            //Open up google maps to travel
             Uri gmmIntentUri = Uri.parse(query);
             Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
             mapIntent.setPackage("com.google.android.apps.maps");

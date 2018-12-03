@@ -42,10 +42,12 @@ public class CountdownFragment extends Fragment {
 
     }
 
+    //Update the countdown every second
     public void updateCountdown() {
         if(eventStart!=null) {
             if(eventStart.toDate().getTime() - Calendar.getInstance().getTime().getTime() <= 0) {
                 if(!countdownFinished) {
+                    //Send message to hub
                     onCountdownFinished();
                     countdownFinished=true;
                 }
@@ -100,6 +102,7 @@ public class CountdownFragment extends Fragment {
 
     public void onCountdownFinished() {
         if (mListener != null) {
+            //Sends event to hub
             mListener.onCountdownFinished(longitude, latitude);
         }
     }

@@ -55,6 +55,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".frontend.HubActivity" />
+        <activity android:name=".frontend.hubfragments.inperson.CrushActivity"></activity>
     </application>
 
 </manifest>
